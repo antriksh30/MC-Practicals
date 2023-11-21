@@ -1,0 +1,9 @@
+num_nodes = 10;
+G = graph;
+G = addnode(G,num_nodes);
+for i = 1:num_nodes-1
+G = addedge(G,i,i+1);
+end
+G = addedge(G,1,num_nodes);
+plot(G,'Layout','force');
+title('Network of 10 nodes');
