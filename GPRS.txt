@@ -1,0 +1,104 @@
+% Throughput vs time
+% Simulation parameters
+simulation_duration = 100; % Duration of the simulation in seconds
+packet_rate_uplink = 2; % Uplink packets per second
+packet_rate_downlink = 3; % Downlink packets per second
+packet_size = 100; % Packet size in bits
+% Initialize variables
+time = 0;
+throughput_uplink = zeros(1, simulation_duration);
+throughput_downlink = zeros(1, simulation_duration);
+% Simulation loop
+for t = 1:simulation_duration
+ % Generate random uplink and downlink packets
+ num_packets_uplink = poissrnd(packet_rate_uplink);
+ num_packets_downlink = poissrnd(packet_rate_downlink);
+ 
+ total_bits_transferred_uplink = num_packets_uplink * packet_size;
+ total_bits_transferred_downlink = num_packets_downlink * packet_size;
+ 
+ % Update uplink and downlink throughputs
+ throughput_uplink(t) = total_bits_transferred_uplink;
+ throughput_downlink(t) = total_bits_transferred_downlink;
+ 
+ % Update time
+ time = time + 1;
+end
+% Plot uplink throughput vs. time
+figure;
+subplot(2, 1, 1);
+plot(1:simulation_duration, throughput_uplink, 'b-');
+xlabel('Time (seconds)');
+ylabel('Uplink Throughput (bits per second)');
+title('GPRS Uplink Throughput vs. Time');
+grid on;
+% Plot downlink throughput vs. time
+subplot(2, 1, 2);
+plot(1:simulation_duration, throughput_downlink, 'r-');
+xlabel('Time (seconds)');
+ylabel('Downlink Throughput (bits per second)');
+title('GPRS Downlink Throughput vs. Time');
+grid on;
+
+% ---- Throughput vs No of users
+% Constants for simulation
+total_time = 3600; % Total simulation time (in seconds) - 1 hour
+packet_duration = 1; % Duration of each packet transmission (in seconds)
+max_sessions_per_hour = 100; % Maximum sessions per hour to simulate
+% Initialize variables
+sessions_per_hour = 1:max_sessions_per_hour; % Varying number of sessions per hour
+throughput = zeros(1, max_sessions_per_hour); % Initialize array for throughput
+for i = 1:max_sessions_per_hour
+ % Simulate effective throughput for each session count
+ num_sessions = sessions_per_hour(i);
+ packets_per_session = total_time / num_sessions / packet_duration;
+ packets_per_session = round(packets_per_session);
+ % Simulate decreasing throughput values for each session (hyperbolic relationship)
+ initial_throughput = 100; % Initial throughput value
+ session_throughputs = initial_throughput / (1 + 0.1 * num_sessions); % Hyperbolic model
+ % Store the effective throughput value for each session
+ throughput(i) = session_throughputs;
+end
+% Plot effective throughput against sessions per hour (with a hyperbolic trend)
+figure;
+plot(sessions_per_hour, throughput, 'b.-', 'LineWidth', 1.5);
+title('Effective Throughput vs Sessions per Hour in GPRS (Hyperbolic)');
+xlabel('Sessions per Hour');
+ylabel('Effective Throughput(bits per second)');
+grid on;
+
+%--- Shannon capacity vs SNR
+% Given bandwidth for GPRS (as an example)
+bandwidth_GPRS = 200000; % Bandwidth in Hz (200 kHz)
+% Range of Signal-to-Noise Ratio (SNR) values in dB
+SNR_dB = 0:0.5:20; % From 0 dB to 20 dB in steps of 0.5 dB
+% Calculate Shannon capacity using the formula
+shannon_capacity = bandwidth_GPRS * log2(1 + 10.^(SNR_dB / 10));
+% Plot SNR vs Shannon capacity
+figure;
+semilogx(SNR_dB, shannon_capacity, 'b.-', 'LineWidth', 1.5);
+title('Shannon Capacity vs SNR for GPRS');
+xlabel('Signal-to-Noise Ratio (SNR) [dB]');
+ylabel('Shannon Capacity [bps]');
+grid on;
+% Set custom axis limits for x and y axes
+xlim([0, 20]); % Adjust the x-axis limits from 0 to 20 dB
+ylim([0, max(shannon_capacity) * 1.1]); % Adjust the y-axis limits (10% more than the maximum capacity)
+
+%---- Path loss model
+% Constants for the path loss model
+frequency_GPRS = 900 * 10^6; % GPRS frequency in Hz (e.g., 900 MHz)
+d_ref = 1; % Reference distance in meters
+antenna_gain = 0; % Antenna gains in dB (assuming no gain for simplicity)
+% Range of distances to simulate in meters
+distance = 1:1000; % Distance range from 1 to 1000 meters
+% Calculate Free Space Path Loss (FSPL) in dB
+fspl_dB = 20 * log10(distance / d_ref) + 20 * log10(frequency_GPRS) + 20 * log10(4 * pi) - antenna_gain;
+% Plot Path Loss vs Distance
+figure;
+hold on;
+grid on;
+plot(distance, fspl_dB, 'b.-', 'LineWidth', 1.5);
+title('Free Space Path Loss for GPRS');
+xlabel('Distance (meters)');
+ylabel('Path Loss (dB)');
