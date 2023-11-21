@@ -1,0 +1,76 @@
+% Throughput vs Time
+% Constants for simulation
+total_time = 200; % Total simulation time (in seconds) - 1 hour
+packet_duration = 1; % Duration of each packet transmission (in seconds)
+% Initialize variables
+time = 0:packet_duration:total_time; % Time vector
+num_packets = length(time); % Number of packets
+% Simulate random throughput values for LTE over time
+throughput = rand(1, num_packets) * 100; % Generating random throughput values (scaled by 100 for example purposes)
+% Plot throughput vs time for LTE
+figure;
+plot(time, throughput, 'b.-', 'LineWidth', 1.5);
+title('LTE Throughput vs Time');
+xlabel('Time (seconds)');
+ylabel('Throughput(bits per second)');
+grid on;
+
+% -----Throughput vs No of Users
+% Constants for simulation
+total_time = 3600; % Total simulation time (in seconds) - 1 hour
+packet_duration = 1; % Duration of each packet transmission (in seconds)
+max_UEs = 100; % Maximum number of UEs to simulate
+% Initialize variables
+num_UEs = 1:max_UEs; % Varying number of active UEs
+scheduled_throughput = zeros(1, max_UEs); % Initialize array for scheduled throughput
+for i = 1:max_UEs
+ % Simulate scheduled throughput for each number of UEs
+ % For this example, assume scheduled throughput decreases with more UEs
+ num_active_UEs = num_UEs(i);
+ % Simulate decreasing throughput values for each number of UEs
+ initial_throughput = 100; % Initial throughput value
+ decreasing_factor = 0.9; % Factor for decreasing throughput
+ scheduled_throughput(i) = initial_throughput * decreasing_factor^num_active_UEs;
+end
+% Plot scheduled throughput against number of active UEs
+figure;
+hold on;
+grid on;
+plot(num_UEs, scheduled_throughput, 'b.-', 'LineWidth', 1.5);
+title('Scheduled Throughput vs Number of Active UEs for LTE');
+xlabel('Number of Active UEs');
+ylabel('Scheduled Throughput(bits per second)');
+
+% -----Shannon vs SNR
+% Constants for LTE
+bandwidth_LTE = 20 * 10^6; % LTE bandwidth in Hz (e.g., 20 MHz)
+% Range of Signal-to-Noise Ratio (SNR) values in dB
+SNR_dB = -10:0.5:30; % From -10 dB to 30 dB in steps of 0.5 dB
+% Calculate Shannon capacity using the formula
+shannon_capacity = bandwidth_LTE * log2(1 + 10.^(SNR_dB / 10));
+% Plot SNR vs Shannon capacity for LTE
+figure;
+plot(SNR_dB, shannon_capacity, 'b.-', 'LineWidth', 1.5);
+title('Shannon Capacity vs SNR for LTE');
+xlabel('Signal-to-Noise Ratio (SNR) [dB]');
+ylabel('Shannon Capacity [bps]');
+grid on
+
+% -----Path Loss Model
+% Constants for Log-Distance Path Loss Model
+d0 = 1; % Reference distance in meters
+PL_d0 = 50; % Path Loss at reference distance (example value in dB)
+n = 3; % Path loss exponent (example value)
+X_f = normrnd(0, 4); % Log-Normal Shadowing (random factor with mean 0 and std deviation 4)
+% Range of distances to simulate in meters
+distance = 1:1000; % Distance range from 1 to 1000 meters
+% Calculate Log-Distance Path Loss (PL) in dB
+PL = PL_d0 + 10 * n * log10(distance / d0) + X_f;
+% Plot Log-Distance Path Loss vs Distance for LTE
+figure;
+hold on;
+grid on;
+plot(distance, PL, 'b.-', 'LineWidth', 1.5);
+title('Log-Distance Path Loss Model for LTE');
+xlabel('Distance (meters)');
+ylabel('Path Loss (dB)');
