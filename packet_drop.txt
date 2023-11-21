@@ -1,0 +1,62 @@
+queue_size = 50;
+bandwidth = 16; % 16 Mbps
+packet_size = 2000; % bytes
+max_packet_size = 1000; % bytes
+stop_time = 1100; % 1100 ms
+arrival_time = 1e-3; % 1 ms
+propagation_delay = 5e-3; % 5 ms
+
+% Initialize arrays to store data
+bandwidth_values = [];
+packets_dropped = [];
+inRates = [];
+outRates = [];
+transmissionDelays = [];
+% Loop through varying bandwidth values
+while bandwidth >= 1
+    % Calculate transmission delay
+    transmission_delay = (max_packet_size * 8) / (bandwidth * 1e6);
+    % Calculate inRate and outRate
+    inRate = packet_size / max_packet_size;
+    outRate = 1e-3 / transmission_delay;
+    % Calculate firstDrop and PacketsDropped
+    if inRate <= outRate
+        PacketsDropped = 0;
+    else
+        firstDrop = queue_size / (inRate - outRate);
+        PacketsDropped = ceil((stop_time - firstDrop) * (inRate - outRate)) + 1;
+    end
+    % Store the results in arrays
+    bandwidth_values = [bandwidth_values, bandwidth];
+    packets_dropped = [packets_dropped, PacketsDropped];
+    inRates = [inRates, inRate];
+    outRates = [outRates, outRate];
+    transmissionDelays = [transmissionDelays, transmission_delay];
+
+    % Print the results
+    fprintf('Bandwidth: %.2f bps\n', bandwidth);
+    fprintf('InRate: %.2f\n', inRate);
+    fprintf('OutRate: %.2f\n', outRate);
+    fprintf('Transmission Delay: %.6f s\n', transmission_delay);
+    fprintf('Packets Dropped: %d\n\n', PacketsDropped);
+
+    % Reduce bandwidth by 1 for next iteration
+    bandwidth = bandwidth - 1 ;
+end
+
+% Plot the graph
+semilogx(bandwidth_values, packets_dropped, '-o'); % Use logarithmic scale
+xlabel('Bandwidth (Mbps)');
+ylabel('Packets Dropped');
+title('Packets Dropped vs. Bandwidth');
+grid on;
+
+
+
+% Add text annotations to the graph
+for i = 1:length(bandwidth_values)
+    x = bandwidth_values(i);
+    y = packets_dropped(i);
+    text(x, y, sprintf('(%.2f, %d)', x, y), 'VerticalAlignment', 'bottom', 'HorizontalAlignment', 'left')
+end
+
