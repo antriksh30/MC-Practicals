@@ -1,0 +1,22 @@
+% Simulated user data for 10 users 
+numUsers = 10;
+frequencySpectrum = 200; % Total available frequency spectrum
+userData = randi([1, frequencySpectrum], numUsers, 1);
+% Number of FDMA frequency slots
+numSlots = 3;
+% Applying K-means clustering to allocate frequency bands to users
+[idx, centers] = kmeans(userData, numSlots);
+% Plotting FDMA allocation with colored clusters
+figure;
+scatter(1:numUsers, userData, 'bo', 'DisplayName', 'User Frequencies');
+hold on;
+grid on;
+colors = lines(numSlots); % Generate colors for each cluster
+for i = 1:numSlots
+clusterUsers = find(idx == i);
+scatter(clusterUsers, userData(clusterUsers), 100, colors(i, :), 'filled', 'DisplayName', ['Slot ' num2str(i)]);
+end
+title('FDMA Allocation Using Clustering (10 Users)');
+xlabel('User Index');
+ylabel('Frequency');
+legend

@@ -1,0 +1,42 @@
+% CDMA Network with 10 Nodes
+% Number of nodes in the network
+num_nodes = 10;
+% Define spreading codes for each node 
+%(randomly generated in this example)
+orthogonal_code = randi([0, 1], num_nodes, 10) * 2 - 1;
+% Generate random data for each node
+node_data = randi([0, 1], num_nodes, 10);
+disp('the data to be sent is :- ');
+disp(node_data) ;
+% Transmission (each node multiplies its data with spreading code)
+transmitted_signal = node_data .* orthogonal_code;
+disp('the data to be transmitted is :- ');
+disp(transmitted_signal);
+% Reception and decoding
+decoded_data = zeros(num_nodes, 10);
+for node = 1:num_nodes 
+received_signal = transmitted_signal(node, :).*orthogonal_code(node, :);
+decoded_data(node, :) = received_signal > 0 ;
+end
+disp('the data received is :- ');
+disp(decoded_data);
+% Plot the transmitted and received data for each node
+figure;
+subplot(2, 1, 1);
+for node = 1:num_nodes
+stem(node, sum(transmitted_signal(node, :)),'b', 'LineWidth', 2);
+hold on;
+end
+title('Transmitted Data for Each Node');
+xlabel('Node');
+ylabel('Encoded Data');
+grid on;
+subplot(2, 1, 2);
+for node = 1:num_nodes
+stem(node, sum(decoded_data(node, :)),'r', 'LineWidth', 2);
+hold on;
+end
+title('Received and Decoded Data for Each Node');
+xlabel('Node');
+ylabel('Decoded Data');
+grid on;

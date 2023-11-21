@@ -1,0 +1,22 @@
+% Simulated user data for 10 users
+numUsers = 10;
+totalTimeSlots = 50; % Total available time slots
+userData = randi([1, totalTimeSlots], numUsers, 1);
+% Number of TDMA time slots
+numSlots = 3;
+% Applying K-means clustering to allocate time slots to users
+[idx, centers] = kmeans(userData, numSlots);
+% Plotting TDMA allocation with colored slots
+figure;
+scatter(1:numUsers, userData, 'ro', 'DisplayName', 'User Time Slots');
+hold on;
+grid on;
+colors = lines(numSlots); % Generate colors for each cluster
+for i = 1:numSlots
+ clusterUsers = find(idx == i);
+scatter(clusterUsers, userData(clusterUsers), 100, colors(i, :), 'filled', 'DisplayName', ['Slot ' num2str(i)]);
+end
+title('TDMA Allocation Using Clustering (10 Users)');
+xlabel('User Index');
+ylabel('Time Slots');
+legend('Location', 'best');
