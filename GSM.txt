@@ -1,0 +1,115 @@
+% Path Loss GSM(Save the function and main code in seperate files)
+% Okumura Hata path loss model for GSM
+function path_loss = okumura_hata(frequency, distance, height_transmitter)
+    % Constants for the Okumura Hata model
+    A = 69.55;
+    B = 26.16;
+    C = 13.82;
+    D = 44.9;
+    F = 38.3;
+
+    % Calculate path loss
+    path_loss = A + B * log10(frequency) - C + (D * log10(height_transmitter)) + ...
+                ((F * (log10(distance)))^2 / 30) - 4.97;
+end
+
+close all;
+% Parameters
+frequency = 900;  % Frequency in MHz (GSM 900)
+distance_range = 1:0.1:20;  % Distance from 1 km to 20 km
+height_transmitter = 30;  % Height of the transmitter in meters
+height_receiver = 2;  % Height of the receiver in meters
+
+% Initialize path loss array
+path_loss_values = zeros(size(distance_range));
+
+% Calculate path loss for each distance
+for i = 1:length(distance_range)
+    path_loss_values(i) = okumura_hata(frequency, distance_range(i), height_transmitter);
+end
+
+% Plotting
+plot(distance_range, path_loss_values, 'LineWidth', 2);
+title('Path Loss for GSM (Okumura Hata Model)');
+xlabel('Distance (km)');
+ylabel('Path Loss (dB)');
+grid on;
+
+
+% ----Save this in seperate file(
+% Shannon Capacity vs SNR for GSM
+% Bandwidth for GSM in Hz (200 kHz)
+bandwidth = 200e3;
+% Varying Signal-to-Noise Ratio (SNR)
+SNR_dB = 0:2:20; % Vary SNR from 0 to 20 dB
+SNR = 10.^(SNR_dB/10); % Convert SNR from dB to linear scale
+% Calculate Shannon Capacity for varying SNR
+capacity = bandwidth * log2(1 + SNR);
+% Plotting the Shannon Capacity vs. SNR
+figure;
+semilogx(SNR_dB,capacity/1000,'b','LineWidth', 1.5);
+title('Theoretical Channel Capacity for GSM');
+xlabel('Signal-to-Noise Ratio (SNR) in dB');
+ylabel('Channel Capacity (kbps)');
+grid on;
+
+% ---- Throughput vs Time
+% Parameters
+total_time = 100; % Total simulation time (in seconds)
+time_interval = 1; % Time interval for calculation (in seconds)
+% Simulation
+time = 0:time_interval:total_time;
+num_intervals = numel(time);
+% Generating example throughput values (random in this case)
+uplink_throughput = rand(1, num_intervals)*500 + 500; % Random values between 500 and 1000 kbps
+downlink_throughput = rand(1, num_intervals)*800 + 800; % Random values between 800 and 1600 kbps
+% Creating subplots for uplink and downlink
+figure;
+% Subplot for uplink throughput
+subplot(2, 1, 1);
+plot(time, uplink_throughput, 'b', 'LineWidth', 1.5);
+title('Uplink Throughput vs Time');
+xlabel('Time (seconds)');
+ylabel('Throughput (kbps)');
+grid on;
+% Subplot for downlink throughput
+subplot(2, 1, 2);
+plot(time, downlink_throughput, 'r', 'LineWidth', 1.5);
+title('Downlink Throughput vs Time');
+xlabel('Time (seconds)');
+ylabel('Throughput (kbps)');
+grid on;
+
+
+% -----Throughput vs No of users
+total_time = 100; % Total simulation time (in seconds)
+time_interval = 1; % Time interval for calculation (in seconds)
+num_users = 1:10:100; % Varying number of users
+% Pre-allocating arrays for throughput
+uplink_throughput = zeros(length(num_users), total_time);
+downlink_throughput = zeros(length(num_users), total_time);
+% Simulating throughput for different numbers of users
+for i = 1:length(num_users)
+ % Generating example throughput values (decreasing with more users for demonstration purposes)
+ uplink_throughput(i, :) = rand(1, total_time) * (500 / num_users(i)) + 500;
+ downlink_throughput(i, :) = rand(1, total_time) * (800 / num_users(i)) + 800;
+end
+% Plotting the change in throughput with the number of users in separate subplots
+figure;
+% Subplot for uplink throughput
+subplot(2, 1, 1);
+plot(num_users, mean(uplink_throughput, 2), 'b', 'LineWidth', 1.5);
+title('Uplink Throughput vs Number of Users');
+xlabel('Number of Users');
+ylabel('Mean Throughput (kbps)');
+grid on;
+% Subplot for downlink throughput
+subplot(2, 1, 2);
+plot(num_users, mean(downlink_throughput, 2), 'r', 'LineWidth', 1.5);
+title('Downlink Throughput vs Number of Users');
+xlabel('Number of Users');
+ylabel('Mean Throughput (kbps)');
+grid on;
+
+
+
